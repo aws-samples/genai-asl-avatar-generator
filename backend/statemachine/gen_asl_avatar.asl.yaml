@@ -1,0 +1,93 @@
+---
+Comment: A state machine that converts english text to ASL sign
+StartAt: InputCheck
+States:
+  InputCheck:
+    Type: Choice
+    Choices:
+      - Variable: "$.Text"
+        IsPresent: true
+        Next: Text2Gloss
+    Default: StartTranscriptionJob
+  StartTranscriptionJob:
+    Type: Task
+    Comment: Start a transcribe job on the provided media file
+    Parameters:
+      Media:
+        MediaFileUri.$: States.Format('s3://{}/{}', $.BucketName, $.KeyName)
+      TranscriptionJobName.$: "States.UUID()"
+      IdentifyLanguage: true
+#    Resource: !Sub 'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:aws-sdk:transcribe:startTranscriptionJob'
+    Resource: arn:aws:states:::aws-sdk:transcribe:startTranscriptionJob
+    Next: Wait
+  Wait:
+    Type: Wait
+    Seconds: 2
+    Next: GetTranscriptionJob
+  GetTranscriptionJob:
+    Type: Task
+    Comment: Retrieve the status of an Amazon Transcribe job
+    Parameters:
+      TranscriptionJobName.$: "$.TranscriptionJob.TranscriptionJobName"
+#    Resource: !Sub 'arn:${AWS::Partition}:states:${AWS::Region}:${AWS::AccountId}:aws-sdk:transcribe:getTranscriptionJob'
+    Resource: arn:aws:states:::aws-sdk:transcribe:getTranscriptionJob
+    Next: TranscriptionJobStatus
+  TranscriptionJobStatus:
+    Type: Choice
+    Choices:
+      - Variable: "$.TranscriptionJob.TranscriptionJobStatus"
+        StringEquals: COMPLETED
+        Next: ProcessTranscription
+      - Variable: "$.TranscriptionJob.TranscriptionJobStatus"
+        StringEquals: FAILED
+        Next: Failed
+    Default: Wait
+  Failed:
+    Type: Fail
+    Cause: 'transcription job failed'
+    Error: FAILED
+  ProcessTranscription:
+    Type: Task
+    Resource: "${ProcessTranscriptionFunctionArn}"
+    Parameters:
+      TranscriptionJobName.$: "$.TranscriptionJob.TranscriptionJobName"
+    Retry:
+      - ErrorEquals:
+          - States.TaskFailed
+        IntervalSeconds: 2
+        MaxAttempts: 3
+        BackoffRate: 1
+    Next: Text2Gloss
+  Text2Gloss:
+    Type: Task
+    Resource: "${Text2GlossFunctionArn}"
+    Parameters:
+      Text.$: "$.Text"
+    Retry:
+    - ErrorEquals:
+      - States.TaskFailed
+      IntervalSeconds: 15
+      MaxAttempts: 5
+      BackoffRate: 1.5
+    Next: Gloss2Pose
+  Gloss2Pose:
+    Type: Task
+    Resource: "${Gloss2PoseFunctionArn}"
+    Retry:
+    - ErrorEquals:
+      - States.TaskFailed
+      IntervalSeconds: 2
+      MaxAttempts: 3
+      BackoffRate: 1
+#    Next: Pose2Sign
+    End: true
+#  Pose2Sign:
+#    Type: Task
+#    Resource: "${Pose2SignFunctionArn}"
+#    Retry:
+#    - ErrorEquals:
+#      - States.TaskFailed
+#      IntervalSeconds: 2
+#      MaxAttempts: 3
+#      BackoffRate: 1
+#    End: true

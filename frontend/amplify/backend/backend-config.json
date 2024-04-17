@@ -1,0 +1,99 @@
+{
+  "api": {
+    "Audio2Sign": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
+          "category": "function",
+          "resourceName": "Audio2Sign"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    }
+  },
+  "auth": {
+    "GenAslAvatarDemo": {
+      "customAuth": false,
+      "dependsOn": [],
+      "frontendAuthConfig": {
+        "mfaConfiguration": "OFF",
+        "mfaTypes": [
+          "SMS"
+        ],
+        "passwordProtectionSettings": {
+          "passwordPolicyCharacters": [],
+          "passwordPolicyMinLength": 8
+        },
+        "signupAttributes": [],
+        "socialProviders": [],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
+      },
+      "providerPlugin": "awscloudformation",
+      "service": "Cognito"
+    }
+  },
+  "function": {
+    "Audio2Sign": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
+  "hosting": {
+    "S3AndCloudFront": {
+      "providerPlugin": "awscloudformation",
+      "service": "S3AndCloudFront"
+    }
+  },
+  "parameters": {
+    "AMPLIFY_function_Audio2Sign_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "Audio2Sign"
+        }
+      ]
+    },
+    "AMPLIFY_function_Audio2Sign_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "Audio2Sign"
+        }
+      ]
+    },
+    "AMPLIFY_storage_genaslavatardemoea26af8c_bucketName": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "genaslavatardemoea26af8c"
+        }
+      ]
+    },
+    "AMPLIFY_storage_genaslavatardemoea26af8c_region": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "genaslavatardemoea26af8c"
+        }
+      ]
+    }
+  },
+  "storage": {
+    "genaslavatardemoea26af8c": {
+      "dependsOn": [],
+      "providerPlugin": "awscloudformation",
+      "service": "S3",
+      "serviceType": "imported"
+    }
+  }
+}

@@ -1,0 +1,284 @@
+.App {
+  text-align: center;
+}
+
+.top-header {
+  display: flex;
+  height: 69px;
+  justify-content: space-between;
+  align-items: center;
+  align-content: center;
+  background: var(--neutral-10, #fff);
+  box-shadow: 0px 0px 20px 0px rgba(38, 38, 38, 0.15);
+  width: 100vw;
+  padding-left: 10px;
+  padding-right: 100px;
+  position: fixed;
+  top: 0;
+}
+
+.translate-btn {
+  display: flex;
+  width: 7vw;
+  height: 2vw;
+  padding: 5px 3px 7px 3px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+}
+
+.home-btn {
+  display: flex;
+  align-items: center;
+  font-size: 1.3vw;
+  font-weight: 600;
+}
+
+.header-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.discover-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.dicover-txt {
+  color: var(--neutral-100, #262626);
+  text-align: center;
+  font-size: 3vw;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.our-txt {
+  background: var(
+    --brand-gradient,
+    linear-gradient(10deg, #0085ff -2.07%, #006dd2 88.29%)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  /* XL/Bold */
+  /* font-family: Inter; */
+  font-size: 3vw;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.discover-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.about-us {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.about-us-heading {
+  width: 60vw;
+  max-width: 500px;
+  background: var(
+    --brand-gradient,
+    linear-gradient(10deg, #0085ff -2.07%, #006dd2 88.29%)
+  );
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.about-us-img {
+  width: 50vw;
+  height: 20vw;
+  max-width: 450px;
+  max-height: 200px;
+}
+
+.avatar-img {
+  width: 12vw;
+  height: 12vw;
+  border-radius: 10px;
+}
+
+.job-type {
+  color: var(--neutral-80, #5d5f61);
+  font-family: Inter;
+  font-size: 1vw;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 0px;
+}
+
+.avatar-name {
+  color: var(--neutral-100, #262626);
+  font-size: 1.5vw;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 2px;
+}
+
+.footer {
+  background: #f2f5f7;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  color: white;
+  font-size: 25px;
+  padding: 0rem 2vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.translate-view {
+  /* max-width: 1000px; */
+  width: 80vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.box-setting {
+  display: flex;
+  padding: 1vw;
+  justify-content: space-between;
+}
+
+.letter-count {
+  font-size: 1vw;
+  color: var(--neutral-80, #5d5f61);
+  font-family: Inter;
+}
+
+.text-area {
+  width: 100%;
+  height: 40%;
+  font-size: 1vw;
+}
+
+.function-comp {
+  display: flex;
+  gap: 1vw;
+  align-items: center;
+}
+.upload-btn {
+  width: 5vw;
+  height: 2vw;
+  border: 1px solid #d0d5dd;
+  display: flex;
+  padding: 0.625rem 1rem;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.5rem;
+  gap: 5px;
+}
+
+.upload-img {
+  width: 1.3vw;
+}
+
+.upload-btn-txt {
+  font-size: 1vw;
+}
+
+.speaker-img {
+  width: 2vw;
+}
+
+.footer-text {
+  font-size: 1.5vw;
+}
+
+.footer-text-desc {
+  font-size: 1vw;
+  color: var(--neutral-80, #5d5f61);
+}
+
+.top-header-txt {
+  font-size: 1.9vw;
+}
+
+.translate-btn-txt {
+  font-size: 1vw;
+}
+
+/* */
+@import url("https://fonts.googleapis.com/css?family=Raleway:400,500,600");
+@import url("https://fonts.cdnfonts.com/css/amazon-ember");
+
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.main-container {
+  height: 100vh;
+  width: 100%;
+  background: radial-gradient(
+    ellipse at top right,
+    #d2001a,
+    #4e39dc,
+    #f48e21,
+    #23d5ab
+  );
+  background-size: 200% 200%;
+  animation: color 10s ease-in-out infinite;
+}
+
+.main-container-header {
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.main-container-header table {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.main-container-header tr {
+  text-align: center;
+}
+
+.main-container-header tr td {
+  list-style: none;
+  display: inline-block;
+  text-decoration: none;
+  text-transform: capitalize;
+  text-align-last: center;
+  color: #fff;
+  font-size: 20px;
+  font-family: "Raleway", sans-serif;
+  letter-spacing: 2px;
+  font-weight: 600;
+  padding: 10px;
+  vertical-align: middle;
+}
+
+@keyframes color {
+  0% {
+    background-position: 0 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+.gen-asl-logo {
+  width: 175px;
+}
+.gen-asl-logo img {
+  width: 60%;
+}
