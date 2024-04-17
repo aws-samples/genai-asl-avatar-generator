@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "paths": {
+    "/sign": {
+      "name": "/sign",
+      "lambdaFunction": "Audio2Sign",
+      "permissions": {
+        "setting": "protected",
+        "auth": [
+          "create",
+          "read",
+          "update",
+          "delete"
+        ],
+        "guest": [
+          "create",
+          "read"
+        ]
+      }
+    }
+  }
+}

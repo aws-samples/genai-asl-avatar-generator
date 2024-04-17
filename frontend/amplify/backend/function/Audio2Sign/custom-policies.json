@@ -1,0 +1,6 @@
+[
+  {
+    "Action": ["states:*"],
+    "Resource": ["*"]
+  }
+]

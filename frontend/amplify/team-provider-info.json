@@ -1,0 +1,67 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-genaslavatardemo-dev-205316-authRole",
+      "UnauthRoleArn": "arn:aws:iam::853513360253:role/amplify-genaslavatardemo-dev-205316-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::853513360253:role/amplify-genaslavatardemo-dev-205316-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-genaslavatardemo-dev-205316-deployment",
+      "UnauthRoleName": "amplify-genaslavatardemo-dev-205316-unauthRole",
+      "StackName": "amplify-genaslavatardemo-dev-205316",
+      "StackId": "arn:aws:cloudformation:us-west-2:853513360253:stack/amplify-genaslavatardemo-dev-205316/2a6d6bc0-84c2-11ee-a5e5-06f0c459ae1f",
+      "AmplifyAppId": "d1vai36rgmoizw",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-genaslavatardemo-dev-205316-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
+    },
+    "categories": {
+      "storage": {
+        "genaslavatardemoea26af8c": {
+          "bucketName": "genasl-data",
+          "region": "us-west-2"
+        }
+      },
+      "auth": {
+        "GenAslAvatarDemo": {}
+      },
+      "function": {
+        "Audio2Sign": {
+          "deploymentBucketName": "amplify-genaslavatardemo-dev-210418-deployment",
+          "s3Key": "amplify-builds/Audio2Sign-43417173553869535256-build.zip"
+        }
+      }
+    }
+  },
+  "prod": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-genaslavatardemo-prod-92937-authRole",
+      "UnauthRoleArn": "arn:aws:iam::853513360253:role/amplify-genaslavatardemo-prod-92937-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::853513360253:role/amplify-genaslavatardemo-prod-92937-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-genaslavatardemo-prod-92937-deployment",
+      "UnauthRoleName": "amplify-genaslavatardemo-prod-92937-unauthRole",
+      "StackName": "amplify-genaslavatardemo-prod-92937",
+      "StackId": "arn:aws:cloudformation:us-west-2:853513360253:stack/amplify-genaslavatardemo-prod-92937/f4cf32f0-8494-11ee-b34e-02350d70ea63",
+      "AmplifyAppId": "d1vai36rgmoizw",
+      "APIGatewayAuthURL": "https://s3.amazonaws.com/amplify-genaslavatardemo-prod-92937-deployment/amplify-cfn-templates/api/APIGatewayAuthStack.json"
+    },
+    "categories": {
+      "auth": {
+        "GenAslAvatarDemo": {}
+      },
+      "function": {
+        "Audio2Sign": {
+          "deploymentBucketName": "amplify-genaslavatardemo-prod-92937-deployment",
+          "s3Key": "amplify-builds/Audio2Sign-496738336a44752b4851-build.zip"
+        }
+      },
+      "storage": {
+        "genaslavatardemoea26af8c": {
+          "bucketName": "genasl-data",
+          "region": "us-west-2"
+        }
+      },
+      "api": {
+        "Audio2Sign": {}
+      }
+    }
+  }
+}

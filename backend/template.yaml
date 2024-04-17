@@ -1,0 +1,114 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  GenASLAvatar
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Tracing: Active
+  Api:
+    TracingEnabled: True
+
+Resources:
+  GenASLAvatarStateMachine:
+    Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
+    Properties:
+      DefinitionUri: statemachine/gen_asl_avatar.asl.yaml
+      DefinitionSubstitutions:
+        Text2GlossFunctionArn: !GetAtt Text2GlossFunction.Arn
+        Gloss2PoseFunctionArn: !GetAtt Gloss2PoseFunction.Arn
+        Pose2SignFunctionArn: !GetAtt Pose2SignFunction.Arn
+        ProcessTranscriptionFunctionArn: !GetAtt ProcessTranscriptionFunction.Arn
+      Events:
+        GenASLAvatarApiEvent:
+          Type: Api
+          Properties:
+            Method: post
+            Path: /
+      Policies: # Find out more about SAM policy templates: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
+        - LambdaInvokePolicy:
+            FunctionName: !Ref Text2GlossFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref Gloss2PoseFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref Pose2SignFunction
+        - LambdaInvokePolicy:
+            FunctionName: !Ref ProcessTranscriptionFunction
+        - Statement:
+          - Effect: Allow
+            Action:
+              - 'transcribe:StartTranscriptionJob'
+              -  'transcribe:GetTranscriptionJob'
+              -  's3:GetObject'
+            Resource: '*'
+
+  ProcessTranscriptionFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/process_transcription/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+      Policies:
+        - Statement:
+          - Effect: Allow
+            Action:
+              - 'transcribe:GetTranscriptionJob'
+              - 's3:GetObject'
+            Resource: '*'
+
+  Text2GlossFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/text2gloss/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Timeout: 60
+      Architectures:
+        - x86_64
+      Policies:
+        - Statement:
+          - Effect: Allow
+            Action:
+              - 'bedrock:*'
+            Resource: '*'
+  Gloss2PoseFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/gloss2pose/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Timeout: 61
+      Layers:
+        - arn:aws:lambda:us-west-2:853513360253:layer:ffmpeg:1
+      Architectures:
+        - x86_64
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: Pose_Data*
+        - S3ReadPolicy:
+            BucketName: genasl-avatar
+        - S3FullAccessPolicy:
+            BucketName: genasl-data
+
+  Pose2SignFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/pose2sign/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+Outputs:
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-generated-resources.html
+  ServerlessRestApiArn:
+    Description: "ServerlessRestApi ARN"
+    Value: !Ref ServerlessRestApi
+  GenASLAvatarStateMachineArn:
+    Description: "GenASLAvatar State machine ARN"
+    Value: !Ref GenASLAvatarStateMachine
+  GenASLAvatarStateMachineRoleArn:
+    Description: "IAM Role created for GenASLAvatar State machine based on the specified SAM Policy Templates"
+    Value: !GetAtt GenASLAvatarStateMachineRole.Arn
