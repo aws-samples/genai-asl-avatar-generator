@@ -1,4 +1,4 @@
-## My Project
+## GenASL Avatar Generative AI powered American Sign Language Avatars
 
 TODO: Fill this README out!
 

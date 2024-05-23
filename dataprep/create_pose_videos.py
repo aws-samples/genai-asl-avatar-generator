@@ -1,6 +1,26 @@
+import concurrent
+
+import configparser
+
+config_parser = configparser.ConfigParser()
+config_parser.read("config.ini")
+config = config_parser['DEFAULT']
+f"{config['s3_prefix']}/gloss2pose/lookup/"
+
+bucket_name=config['s3_bucket']
+from_key=f"{config['s3_prefix']}/gloss2pose/lookup/sign/"
+to_key=f"{config['s3_prefix']}/gloss2pose/lookup/pose/"
+
+
+import os
+import pathlib
+
+
+import boto3 as boto3
+
+os.chdir("mmpose")
+
 import mmcv
-from mmcv import imread
-import mmengine
 from mmengine.registry import init_default_scope
 import numpy as np
 
@@ -18,15 +38,14 @@ try:
 except (ImportError, ModuleNotFoundError):
     has_mmdet = False
 
-local_runtime = True
 
 # pose_config = 'configs/body_2d_keypoint/topdown_heatmap/coco/td-hm_hrnet-w32_8xb64-210e_coco-256x192.py'
 pose_config = 'configs/wholebody_2d_keypoint/rtmpose/coco-wholebody/rtmpose-l_8xb32-270e_coco-wholebody-384x288.py'
 # pose_config ='configs/_base_/datasets/coco_wholebody_openpose.py'
-pose_checkpoint = 'checkpoints/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth'
+pose_checkpoint = '../checkpoints/rtmpose-l_simcc-coco-wholebody_pt-aic-coco_270e-384x288-eaeb96c8_20230125.pth'
 # pose_checkpoint = 'checkpoints/rtmpose-x_simcc-coco-wholebody_pt-body7_270e-384x288-401dfc90_20230629.pth'
 det_config = 'demo/mmdetection_cfg/faster_rcnn_r50_fpn_coco.py'
-det_checkpoint = 'checkpoints/det/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth'
+det_checkpoint = '../checkpoints/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth'
 
 device = 'cuda:0'
 cfg_options = dict(model=dict(test_cfg=dict(output_heatmaps=True)))
@@ -94,12 +113,11 @@ def visualize_img(img_path, detector, pose_estimator, visualizer,
         kpt_thr=0.3)
 
 
-def create_video():
-    cap = cv2.VideoCapture("../test/hello.mp4")
+def create_video(input_video,output_file):
+    cap = cv2.VideoCapture(input_video)
     video_writer = None
     pred_instances_list = []
     frame_idx = 0
-    output_file = "../test/pose.mp4"
 
     while cap.isOpened():
         success, frame = cap.read()
@@ -156,6 +174,39 @@ def create_image():
         file_name = '../test/pose_results.png'
         cv2.imwrite(file_name, vis_result[:, :, ::-1])
 
+
+
+s3 = boto3.resource('s3')
+s3_client= boto3.client('s3')
+
+def process_file(summary_data):
+    keyname=summary_data.key
+    #write code to download file from S3 and process it and upload it back to S3
+    s3 = boto3.client('s3')
+    source_file= "C:\\Temp\\"+ keyname.replace("/","\\")
+    pathlib.Path(os.path.dirname(source_file)).mkdir(parents=True, exist_ok=True)
+    print(source_file)
+    s3.download_file(bucket_name, keyname, source_file)
+    to_file= source_file.replace("sign","pose")
+    pathlib.Path(os.path.dirname(to_file)).mkdir(parents=True, exist_ok=True)
+    create_video(source_file,to_file)
+    #upload processed file back to S3
+    s3.upload_file(to_file, bucket_name, to_key+ os.path.basename(to_file))
+    print(f"uploaded file {to_key+ os.path.basename(to_file)}")
+    #delete local filel file
+    os.remove(to_file)
+    os.remove(source_file)
+
+    return "processed"
+
+def convert():
+    bucket = s3.Bucket(bucket_name)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+        executor.map(process_file, bucket.objects.filter(Prefix=from_key))
+
+
 if __name__ == '__main__':
+    convert()
    # create_image()
-   create_video()
+   # create_video("../test/hello.mp4","../test/sigh.mp4")
+
