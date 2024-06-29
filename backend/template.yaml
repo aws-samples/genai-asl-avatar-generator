@@ -32,7 +32,6 @@ Resources:
       DefinitionSubstitutions:
         Text2GlossFunctionArn: !GetAtt Text2GlossFunction.Arn
         Gloss2PoseFunctionArn: !GetAtt Gloss2PoseFunction.Arn
-        Pose2SignFunctionArn: !GetAtt Pose2SignFunction.Arn
         ProcessTranscriptionFunctionArn: !GetAtt ProcessTranscriptionFunction.Arn
       Events:
         GenASLAvatarApiEvent:
@@ -45,8 +44,6 @@ Resources:
             FunctionName: !Ref Text2GlossFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref Gloss2PoseFunction
-        - LambdaInvokePolicy:
-            FunctionName: !Ref Pose2SignFunction
         - LambdaInvokePolicy:
             FunctionName: !Ref ProcessTranscriptionFunction
         - Statement:
@@ -107,14 +104,6 @@ Resources:
         - S3FullAccessPolicy:
             BucketName: genasl-data
 
-  Pose2SignFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: functions/pose2sign/
-      Handler: app.lambda_handler
-      Runtime: python3.9
-      Architectures:
-        - x86_64
 Outputs:
   # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-generated-resources.html
   ServerlessRestApiArn:

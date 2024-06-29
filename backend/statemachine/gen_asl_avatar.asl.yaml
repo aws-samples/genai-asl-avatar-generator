@@ -79,15 +79,4 @@ States:
       IntervalSeconds: 2
       MaxAttempts: 3
       BackoffRate: 1
-#    Next: Pose2Sign
     End: true
-#  Pose2Sign:
-#    Type: Task
-#    Resource: "${Pose2SignFunctionArn}"
-#    Retry:
-#    - ErrorEquals:
-#      - States.TaskFailed
-#      IntervalSeconds: 2
-#      MaxAttempts: 3
-#      BackoffRate: 1
-#    End: true
