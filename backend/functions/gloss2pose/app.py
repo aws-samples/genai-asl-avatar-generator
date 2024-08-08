@@ -93,7 +93,7 @@ def process_vides(return_dict, type, sign_ids, uniq_key):
             writer.write(f"file '{local_file_name}' \n")
     # combine the sign videos
     cmd = f"/opt/bin/ffmpeg  -f concat -safe 0 -i {temp_folder}{type}.txt -c copy {temp_folder}{type}.mp4"
-    p1 = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    p1 = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
     s3.upload_file(f"{temp_folder}{type}.mp4", asl_data_bucket, f"{uniq_key}/{type}.mp4")
     video_url = s3.generate_presigned_url(
         ClientMethod='get_object',

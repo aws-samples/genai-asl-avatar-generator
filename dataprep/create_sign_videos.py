@@ -219,7 +219,7 @@ def process_video(video, checkpoint_video_id,checkpoint_filepath):
 
 
 def run_bash_cmd(cmd, dir=None):
-    subprocess.run(cmd, shell=True, cwd=dir, capture_output=True, text=True)
+    subprocess.run(cmd, shell=False, cwd=dir, capture_output=True, text=True)
 
 
 def clip_video(from_video_filepath, to_video_filepath, start_frame, end_frame):
