@@ -25,7 +25,7 @@ type of ==> TYPE
 ? ==> QUESTION
 Watch ==> SEE
 
-Translate thefollowing english text to ASL Gloss and surround it  with tags <gloss> and </gloss>.
+Translate the following english text to ASL Gloss and surround it  with tags <gloss> and </gloss>.
 {text} ==>
 
 
@@ -45,7 +45,11 @@ def lambda_handler(event, context):
         dict: text consists of ASL Gloss
     """
     #
-    text = event.get("Text")
+
+    return {'Gloss': text_to_asl_gloss(event.get("Text"))}
+
+
+def text_to_asl_gloss(text):
     bedrock_client = boto3.client(service_name="bedrock-runtime")
     # create the prompt
 
@@ -74,7 +78,7 @@ def lambda_handler(event, context):
         ],
     }
 
-    modelId = "anthropic.claude-3-sonnet-20240229-v1:0"
+    modelId = "anthropic.claude-3-5-sonnet-20240620-v1:0"
     accept = 'application/json'
     contentType = 'application/json'
 
@@ -86,15 +90,15 @@ def lambda_handler(event, context):
 
     output_text = response_body['content'][0]['text']
     print(response_body)
-    sub1='<gloss'
-    sub2='</gloss>'
+    sub1 = '<gloss>'
+    sub2 = '</gloss>'
     idx1 = output_text.find(sub1)
     idx2 = output_text.find(sub2)
     # length of substring 1 is added to
     # get string from next character
     gloss = output_text[idx1 + len(sub1) + 1: idx2]
     print(gloss)
-    return {'Gloss': gloss}
+    return gloss
 
 
 if __name__ == "__main__":
@@ -103,5 +107,3 @@ if __name__ == "__main__":
     lambda_handler({"Text": "She is watching a movie"}, {})
     lambda_handler({"Text": "He wants to play"}, {})
     lambda_handler({"Text": "Can you come with me?"}, {})
-
-
