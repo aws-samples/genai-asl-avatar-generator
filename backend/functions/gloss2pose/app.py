@@ -36,8 +36,10 @@ def lambda_handler(event, context):
         dict: Object containing details of the stock selling transaction
     """
     # Get the Gloss from event
-    gloss_sentence = event.get("Gloss")
+    return gloss_to_video(event.get("Gloss"))
 
+
+def gloss_to_video(gloss_sentence,pose_only=False, pre_sign=True):
     uniq_key = str(uuid.uuid4())
 
     sign_ids = []
@@ -57,27 +59,32 @@ def lambda_handler(event, context):
                 response = table.query(
                     KeyConditionExpression=Key('Gloss').eq(c)
                 )
-                if response['Count'] >0:
+                if response['Count'] > 0:
                     sign_ids.append(response['Items'][0]['SignID'])
         else:
             sign_ids.append(response['Items'][0]['SignID'])
-    print(sign_ids)
+    # print(sign_ids)
     manager = multiprocessing.Manager()
     return_dict = manager.dict()
-    p1 = Thread(target=process_vides, args=(return_dict, "pose", sign_ids, uniq_key))
+    p1 = Thread(target=process_videos, args=(return_dict, "pose", sign_ids, uniq_key, pre_sign))
     p1.start()
-    p2 = Thread(target=process_vides, args=(return_dict, "sign", sign_ids, uniq_key))
-    p2.start()
+    if not pose_only:
+        p2 = Thread(target=process_videos, args=(return_dict, "sign", sign_ids, uniq_key, pre_sign))
+        p2.start()
+        p2.join()
     p1.join()
-    p2.join()
-    return {'PoseURL': return_dict["pose"],
-            'SignURL': return_dict["sign"]}
+    if not pose_only:
+        return {'PoseURL': return_dict["pose"],
+                'SignURL': return_dict["sign"]}
+    else:
+        return {'PoseURL': return_dict["pose"]}
+
 
     # return {'PoseURL': process_vides("pose", sign_ids,uniq_key),
     #         'SignURL': process_vides("sign", sign_ids,uniq_key)}
 
 
-def process_vides(return_dict, type, sign_ids, uniq_key):
+def process_videos(return_dict, type, sign_ids, uniq_key,pre_sign):
     s3 = boto3.client('s3')
     temp_folder = f"/tmp/{uniq_key}/"
     pathlib.Path(os.path.dirname(temp_folder + f"{type}/")).mkdir(parents=True, exist_ok=True)
@@ -92,19 +99,24 @@ def process_vides(return_dict, type, sign_ids, uniq_key):
             s3.download_file(pose_bucket, key, local_file_name)
             writer.write(f"file '{local_file_name}' \n")
     # combine the sign videos
-    cmd = f"/opt/bin/ffmpeg  -f concat -safe 0 -i {temp_folder}{type}.txt -c copy {temp_folder}{type}.mp4"
-    p1 = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
-    s3.upload_file(f"{temp_folder}{type}.mp4", asl_data_bucket, f"{uniq_key}/{type}.mp4")
-    video_url = s3.generate_presigned_url(
-        ClientMethod='get_object',
-        Params={
-            'Bucket': asl_data_bucket,
-            'Key': f"{uniq_key}/{type}.mp4"
-        },
-        ExpiresIn=604800
-    )
-    return_dict[type] = video_url
-    return video_url
+    #/opt/bin/
+    cmd = f"/opt/homebrew/bin/ffmpeg  -f concat -safe 0 -i {temp_folder}{type}.txt -c copy {temp_folder}{type}.mp4"
+    p1 = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    if pre_sign:
+        s3.upload_file(f"{temp_folder}{type}.mp4", asl_data_bucket, f"{uniq_key}/{type}.mp4")
+        video_url = s3.generate_presigned_url(
+            ClientMethod='get_object',
+            Params={
+                'Bucket': asl_data_bucket,
+                'Key': f"{uniq_key}/{type}.mp4"
+            },
+            ExpiresIn=604800
+        )
+        return_dict[type] = video_url
+        return video_url
+    else:
+        return_dict[type] = f"{temp_folder}{type}.mp4"
+        return f"{temp_folder}{type}.mp4"
 
 
 # def process_sign_video(sign_ids):
